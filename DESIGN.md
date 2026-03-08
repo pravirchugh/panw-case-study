@@ -1,300 +1,378 @@
 # Community Guardian — Design Documentation
 
-## Candidate Name:
-Pravir Chugh
+## Overview
 
-## Scenario Chosen:
-**Scenario 3: Community Safety & Digital Wellness**
+Community Guardian is a community-driven incident reporting platform for **Scenario 3: Community Safety & Digital Wellness**. It empowers users to report local security threats and receive AI-powered, audience-specific safety guidance — while maintaining transparency, user agency, and graceful degradation.
 
-A community-driven incident reporting platform that empowers users to report local security threats and receive AI-powered, audience-specific safety guidance.
-
-## Estimated Time Spent:
-~5.5 hours
+The core thesis: **turn noisy community reports into calm, actionable guidance** — tailored to who's reading it.
 
 ---
 
-## Quick Start
+## Architecture
 
-### Prerequisites:
-- Python 3.11+
-- pip/venvg
-- OpenAI API key (for AI-powered incident analysis)
-- SQLite3 (included with Python)
+### System Diagram
 
-### Run Commands:
-```bash
-# Clone and enter worktree
-cd panw-case-study/.claude/worktrees/vigorous-fermi
-
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # or `.venv\Scripts\activate` on Windows
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment
-cp .env.example .env
-# Edit .env and add your OpenAI API key: OPENAI_API_KEY=sk-...
-
-# Run the server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
-
-Visit: **http://localhost:8000**
-
-### Test Commands:
-```bash
-# Run all tests
-pytest tests/ -v
-
-# Run specific test file
-pytest tests/test_happy_path.py -v
-
-# Run with coverage
-pytest tests/ --cov=app --cov-report=html
+┌─────────────────────────────────────────────────────────────┐
+│                        Browser (User)                       │
+│  ┌──────────┐  ┌──────────────┐  ┌───────────────────────┐  │
+│  │ Feed UI  │  │ Report Form  │  │   Incident Detail     │  │
+│  │ (filter, │  │ (title, desc │  │   (summary, checklist │  │
+│  │  search) │  │  audience)   │  │    status update)     │  │
+│  └────┬─────┘  └──────┬───────┘  └───────────┬───────────┘  │
+└───────┼───────────────┼──────────────────────┼──────────────┘
+        │               │                      │
+        ▼               ▼                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    FastAPI Application                       │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │              Routes (app/routes/incidents.py)        │    │
+│  │  GET /           — incident feed with filters       │    │
+│  │  GET /incidents/new — report form                   │    │
+│  │  POST /incidents   — create (with low-signal check) │    │
+│  │  GET /incidents/:id — detail view                   │    │
+│  │  POST /incidents/:id/update — status/category edit  │    │
+│  └──────────────┬──────────────────────────────────────┘    │
+│                 │                                           │
+│      ┌──────────┴──────────┐                                │
+│      ▼                     ▼                                │
+│  ┌────────────┐    ┌───────────────┐                        │
+│  │ AI Service │    │ Fallback Rules│                        │
+│  │ (OpenAI    │───▶│ (keyword      │  ← automatic fallback  │
+│  │  GPT-3.5)  │    │  classifier)  │                        │
+│  └────────────┘    └───────────────┘                        │
+│         │                  │                                │
+│         ▼                  ▼                                │
+│  ┌─────────────────────────────────────┐                    │
+│  │  Low-Signal Detection (heuristic)   │                    │
+│  │  < 30 chars OR < 8 words → warning  │                    │
+│  └─────────────────────────────────────┘                    │
+│                 │                                           │
+│                 ▼                                           │
+│  ┌─────────────────────────────────────┐                    │
+│  │    SQLite + SQLAlchemy ORM          │                    │
+│  │    (community_guardian.db)           │                    │
+│  └─────────────────────────────────────┘                    │
+└─────────────────────────────────────────────────────────────┘
 ```
-
----
-
-## AI Disclosure
-
-### Did you use an AI assistant (Copilot, ChatGPT, etc.)?
-**Yes** — Claude (Anthropic)
-
-### How did you verify the suggestions?
-1. **Read-before-implement**: Reviewed all generated code before writing to disk
-2. **Test-driven validation**: All AI suggestions validated against existing test suite
-3. **Manual E2E testing**: Tested each feature (create incident, filter, search, noise-to-signal warning) in browser
-4. **Error investigation**: When issues arose (e.g., AttributeError with `request.form`), investigated root cause rather than applying quick fixes
-5. **Code review**: Examined generated code against project patterns (FastAPI dependency injection, SQLAlchemy ORM, Jinja2 templating)
-
-### Give one example of a suggestion you rejected or changed:
-**Rejected**: Initial suggestion was to make the low-signal warning a hard block (prevent submission entirely).
-**Why**: This contradicts responsible AI principles—users should retain agency. Changed to an advisory warning with checkbox confirmation, allowing users to post low-signal reports if they explicitly choose to, while encouraging refinement.
-
----
-
-## Architecture & Design
 
 ### Tech Stack
+
 | Layer | Technology | Rationale |
 |-------|-----------|-----------|
-| **Backend** | FastAPI | Modern async Python framework, built-in dependency injection, excellent OpenAI integration |
-| **Database** | SQLite + SQLAlchemy ORM | Lightweight, zero-setup, easy to ship; ORM prevents SQL injection |
-| **Frontend** | Jinja2 templates + vanilla HTML/CSS | Server-side rendering for simplicity; no build step required |
-| **AI** | OpenAI GPT-3.5-turbo | Natural language understanding for incident classification; graceful fallback to rule-based engine |
-| **Testing** | pytest | Industry standard; fixtures for in-memory SQLite, easy async test support |
-| **Deployment** | Docker-ready | Dockerfile included for production deployment |
+| **Backend** | FastAPI (Python 3.11) | Modern async framework; built-in Pydantic validation, dependency injection, Form() parameter extraction |
+| **Database** | SQLite + SQLAlchemy ORM | Zero-config, single-file storage; ORM prevents SQL injection; easy to swap to PostgreSQL |
+| **Frontend** | Jinja2 SSR + vanilla HTML/CSS | Server-side rendering avoids SPA complexity; no build step; straightforward to follow in demo |
+| **AI** | OpenAI GPT-3.5-turbo | Natural language understanding for classification + summary generation; structured JSON output |
+| **Testing** | pytest + in-memory SQLite | Fast isolation; fixtures for test client and DB session; no external dependencies |
 
-### Core Features
+### Why Not [Alternative]?
 
-#### 1. **Incident Reporting & AI Analysis**
-- Users submit reports with title, description, and audience type (Neighborhood Group, Remote Worker, Elderly User)
-- FastAPI route validates input, calls AI service to classify and generate guidance
-- Graceful fallback to rule-based classifier if OpenAI API unavailable
-- Returns structured response: category, severity, summary, audience-tailored checklist
-
-**Design Decision**: Two-path analysis allows demo to work without API key while showcasing AI capability.
-
-#### 2. **Audience-Aware AI Customization**
-- Same incident gets different checklists based on audience type
-- System prompt includes audience context: elderly users get simpler, step-by-step guidance; remote workers get technical security details
-- Stored in database for consistency across feeds
-
-**Example**:
-- **Elderly User** sees: "Ask a family member or trusted friend for help"
-- **Remote Worker** sees: "Enable MFA on all work accounts; rotate credentials if compromised"
-
-#### 3. **Noise-to-Signal Filtering**
-- Heuristic detection: flags reports < 30 characters OR < 8 words as "low-signal"
-- User sees advisory warning before posting: "Report is quite brief. Adding more details helps us analyze better."
-- Confirmation checkbox required: "I understand and want to post this report anyway"
-- Form values persist if warning appears, allowing users to refine or confirm
-- Non-blocking: users retain full agency to post venting/brief reports if they choose
-
-**Responsible AI**: Improves feed quality without silencing users. Transparent about heuristic limitations.
-
-#### 4. **Incident Feed**
-- Homepage displays all incidents with filters: category, severity, status, audience
-- Search by keyword in title/description
-- Sort by date, with audience badge and classification confidence ("AI ANALYZED" vs "RULE-BASED")
-
-#### 5. **Incident Detail & Management**
-- View full incident with analysis, summary, and checklist
-- Edit status (Open → Reviewed → Resolved) and category
-- Seed data includes 10 realistic incidents spanning all categories and audiences
+| Decision | Alternative Considered | Why I Chose This |
+|----------|----------------------|------------------|
+| FastAPI over Flask | Flask is more common | FastAPI's dependency injection (`Form()`, `Depends()`) makes form handling and DB sessions cleaner |
+| SQLite over PostgreSQL | PostgreSQL for production | Zero-config setup; reviewer can `pip install` and run immediately; fine for prototype scale |
+| SSR over React SPA | React would look more polished | Adds build tooling (Node, Webpack/Vite), doubles complexity; SSR keeps focus on backend engineering |
+| GPT-3.5 over GPT-4 | GPT-4 for better classification | 3.5 is faster, cheaper, sufficient for structured classification; 4 would be premature optimization |
+| Heuristic over ML for low-signal | Train a classifier | No training data available; heuristic is transparent, explainable, zero-cost; can upgrade later |
 
 ---
 
-## Implementation Details
+## Feature Deep Dives
 
-### Key Files & Responsibilities
+### 1. Dual-Path Analysis (AI + Fallback)
 
-| File | Purpose |
-|------|---------|
-| `app/main.py` | FastAPI app setup, database initialization, seed data loading |
-| `app/models.py` | SQLAlchemy `Incident` model with 13 columns (title, description, category, severity, status, summary, checklist, audience_type, ai_generated, is_low_signal, signal_quality_reason, created_at, updated_at) |
-| `app/services/ai_service.py` | OpenAI API integration; returns classification + is_low_signal + reason |
-| `app/services/fallback_rules.py` | Deterministic keyword-based classifier; used if OpenAI unavailable |
-| `app/routes/incidents.py` | GET/POST handlers for feed, create, detail, update |
-| `templates/` | Jinja2 templates: base.html, index.html (feed), create.html, detail.html |
-| `static/style.css` | Minimalist CSS with warning/error box styling |
-| `tests/test_happy_path.py` | 12 tests covering create, filter, search, audience-specific guidance, low-signal warning |
-| `data/incidents_seed.json` | 10 seed incidents, all with good descriptions (none flagged as low-signal) |
+The system never depends solely on AI. Every incident gets analyzed, guaranteed.
 
-### Low-Signal Detection Logic
-```python
-description_len = len(description.strip())
-word_count = len(description.split())
-is_low_signal = description_len < 30 or word_count < 8
+**AI Path** (`app/services/ai_service.py`):
+- Constructs a system prompt with audience context and category constraints
+- Sends user's description to GPT-3.5-turbo requesting structured JSON
+- Parses response into: `category`, `severity`, `summary`, `checklist`
+- Wraps entire call in try/except — any failure triggers fallback
 
-# Thresholds chosen to catch venting/incomplete reports while allowing detailed complaints
-# Example flagged: "Bad stuff." (10 chars, 2 words)
-# Example NOT flagged: "I am frustrated!" (16 chars, 3 words) — but if they had 30 chars+ or 8+ words, would pass
+**Fallback Path** (`app/services/fallback_rules.py`):
+- Keyword-matching classifier: scans description for category indicators
+  - "phishing", "fake email", "suspicious link" → `phishing`
+  - "scam", "fraud", "money" → `scam_fraud`
+  - "ransomware", "malware", "hacked" → `network_security`
+  - "break-in", "vandalism", "theft" → `physical_safety`
+  - "identity", "SSN", "credit card" → `identity_theft`
+- Default severity: `medium` (safe default for safety context)
+- Pre-built checklists per category (4 steps each)
+- Deterministic, instant, zero API cost
+
+**Design Decision**: The fallback was built *first*, before the AI service. This ensures the app is always functional and the AI is a *enhancement*, not a dependency. Each incident displays a badge ("AI ANALYZED" / "RULE-BASED") so users always know the source of the analysis.
+
+### 2. Audience-Aware AI Customization
+
+The same phishing incident generates different guidance depending on who's reading:
+
+**Implementation**: The AI system prompt includes an audience-specific instruction block:
+
+```
+Audience: elderly_user
+→ "Use simple, clear language. Avoid technical jargon.
+   Suggest asking a trusted family member or friend for help.
+   Keep checklist steps short and numbered."
+
+Audience: remote_worker
+→ "Include technical security details.
+   Reference MFA, VPN, network hardening.
+   Assume familiarity with IT concepts."
+
+Audience: neighborhood_group
+→ "Focus on community awareness and mutual aid.
+   Suggest sharing with neighbors and local authorities.
+   Emphasize collective safety."
 ```
 
-### Fallback Rules Engine
-Used when OpenAI unavailable (e.g., rate limit, network error, or no API key):
-- Keyword-based classification (e.g., "phishing", "scam", "ransomware" → categories)
-- Default severity: medium (safe default for safety/security context)
-- Generic checklists per category (not audience-tailored without AI)
-- Deterministic, fast, no API cost
+**Why This Matters**: A 75-year-old receiving a scam call needs "Call your grandson to help check your bank statement." A remote worker needs "Enable hardware-key MFA and rotate your API credentials." Same threat, radically different actionable guidance.
+
+**Database Storage**: `audience_type` is stored per incident, so the feed can filter by audience and display the appropriate badge.
+
+### 3. Noise-to-Signal Filtering
+
+**Problem**: Community feeds get polluted with venting ("THIS SUCKS!!!"), incomplete reports ("bad email"), and panic posts that don't contain actionable information.
+
+**Solution**: Heuristic-based pre-submission advisory.
+
+**Detection Logic**:
+```python
+desc_len = len(description.strip())
+word_count = len(description.split())
+is_low_signal = desc_len < 30 or word_count < 8
+```
+
+**UX Flow**:
+```
+User submits brief report → Server detects low-signal
+  → Re-render form with:
+    ├── Yellow warning box: "Report is quite brief..."
+    ├── Form values preserved (no data loss)
+    └── Checkbox: "I understand and want to post anyway"
+  → User can either:
+    ├── Refine description and resubmit (no checkbox needed)
+    └── Check box and submit as-is (saved with is_low_signal=true)
+```
+
+**Technical Challenge**: FastAPI's `request.form` is async, so you can't call `request.form.get()` in a synchronous handler. Solved by using FastAPI's `Form()` dependency with alias:
+```python
+confirm_low_signal: str = Form(default="", alias="_confirm_low_signal")
+```
+This extracts the form field at the parameter level, making it available synchronously.
+
+**Why Non-Blocking**: Hard-blocking brief reports would:
+- Silence legitimate urgent alerts ("Active shooter at park" = 5 words but critical)
+- Frustrate users who feel censored
+- Undermine trust in the platform
+
+Instead, the advisory approach nudges toward quality while preserving agency.
+
+### 4. Search & Filter System
+
+**Implementation**: Server-side filtering via SQLAlchemy query building:
+```python
+query = db.query(Incident)
+if category: query = query.filter(Incident.category == category)
+if severity: query = query.filter(Incident.severity == severity)
+if status:   query = query.filter(Incident.status == status)
+if audience: query = query.filter(Incident.audience_type == audience)
+if search:   query = query.filter(
+    or_(Incident.title.ilike(f"%{search}%"),
+        Incident.description.ilike(f"%{search}%"))
+)
+```
+
+Filters are additive (AND logic) with text search across title + description.
 
 ---
 
-## Tradeoffs & Prioritization
+## Data Model
 
-### What did you cut to stay within the 4–6 hour limit?
+### Incident Table (13 columns)
 
-1. **Semantic-based low-signal detection**: Instead of using embeddings or sentiment analysis, used simple character/word count heuristics. Still effective, zero API overhead, deployable without ML infrastructure.
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | Integer (PK) | Auto-increment primary key |
+| `title` | String(200) | Short incident headline |
+| `description` | Text | Full incident description from user |
+| `category` | String(50) | AI/fallback classification: phishing, scam_fraud, network_security, physical_safety, identity_theft, other |
+| `severity` | String(20) | low / medium / high |
+| `status` | String(20) | open / reviewed / resolved |
+| `summary` | Text | AI-generated or template summary |
+| `checklist` | Text (JSON) | JSON array of action items |
+| `audience_type` | String(50) | neighborhood_group / remote_worker / elderly_user |
+| `ai_generated` | Boolean | true = AI analyzed, false = rule-based fallback |
+| `is_low_signal` | Boolean | true = user confirmed a low-signal report |
+| `signal_quality_reason` | String(255) | Human-readable reason if low-signal (nullable) |
+| `created_at` | DateTime | Auto-set on creation |
+| `updated_at` | DateTime | Auto-set on creation and update |
 
-2. **User authentication**: Focused on core incident reporting. Authentication would add session management, login templates, password hashing—valuable but not essential for MVP demo.
+### Seed Data
 
-3. **Edit incident after posting**: Users can only update status/category, not description. Full edit capability would require audit trails for responsible platforms, adding complexity.
-
-4. **Filtering UI with advanced options**: Built simple category/severity/status dropdowns. Advanced filters (date range, incident score) left for future.
-
-5. **Real-time WebSocket updates**: Feed is server-rendered. Real-time would require WebSocket infrastructure—premature for MVP.
-
-6. **Mobile responsiveness**: Focused on desktop UX. Would need viewport meta tags, mobile CSS breakpoints, touch-friendly buttons.
-
-### What would you build next if you had more time?
-
-1. **Feed Quality Scoring**: Add "helpfulness" ratings. Users upvote/downvote incidents; low-signal reports with consistent downvotes get deprioritized (transparent, user-driven curation).
-
-2. **Semantic Similarity Detection**: Use embeddings to identify duplicate or near-identical reports; suggest merging. Improves feed signal.
-
-3. **Severity Auto-adjustment**: Train heuristic or model on user feedback. If low-signal reports are later confirmed critical, retrain weighting.
-
-4. **Community Validation**: "Have you experienced this?" checkbox on each incident. Incidents with 10+ confirmations get "Verified" badge.
-
-5. **Notification System**: Email/SMS alerts for high-severity incidents in user's area; unsubscribe controls.
-
-6. **User Accounts & Reputation**: Track user submission quality, award badges for consistent helpful reports, penalize spam (spam score).
-
-7. **Incident Timeline**: "This was reported X times in the last week; trend is [up/down]"—shows community pattern.
-
-8. **Markdown Editor**: Rich text for descriptions; better formatting for checklists.
-
-9. **Geo-tagging**: Filter by neighborhood/address (requires maps integration).
-
-10. **Mobile App**: Native iOS/Android with push notifications, offline incident drafts.
-
-### Known Limitations
-
-1. **No Persistent User Identity**: Anyone can report; no account system. Mitigated by low-signal filter catching spam, but bad actors could bypass with detailed fake reports.
-
-2. **AI Bias**: OpenAI model may reflect societal biases in security/safety perception. Low-signal heuristic is simple and rule-based, reducing bias but also reducing nuance.
-
-3. **Hardcoded Thresholds**: Low-signal detection at 30 chars / 8 words is arbitrary. No dynamic threshold tuning based on category (e.g., "Attack in progress" is valid even at 5 words).
-
-4. **No Rate Limiting**: No per-user or per-IP request limits. Vulnerable to spam floods.
-
-5. **SQLite Concurrency**: SQLite is single-writer; under high concurrent load, will hit "database is locked" errors. Fine for MVP, needs PostgreSQL at scale.
-
-6. **No Audit Trail**: Updates to incidents don't log who changed what. Important for responsibility platforms.
-
-7. **CSS Not Optimized**: Inline styles in templates; no minification or caching headers. Works fine for MVP, not production-ready.
-
-8. **Seed Data is Static**: All seeds are "good" descriptions. No low-signal seeds to demo the warning in a fresh install (though tests cover it).
+`data/incidents_seed.json` contains 10 synthetic incidents:
+- 2 per category (phishing, scam_fraud, network_security, physical_safety, identity_theft)
+- Mix of severities (low, medium, high) and statuses (open, reviewed, resolved)
+- Distributed across all 3 audience types
+- All have substantive descriptions (none flagged as low-signal)
+- Auto-loaded on first startup; skipped if data already exists
 
 ---
 
-## Responsible AI Considerations
+## File Structure
 
-### Design Principles Applied
-
-1. **Transparency**: Low-signal detection uses simple, understandable heuristics (character count, word count). Not a black box.
-
-2. **User Agency**: Warning is advisory, not blocking. Users can post low-signal reports if they choose; system doesn't make decision for them.
-
-3. **Graceful Degradation**: Fallback classifier ensures app works without OpenAI; safety net, not critical dependency.
-
-4. **Audience-Aware Tone**: System prompts adjust language complexity for elderly users—respects cognitive load without being patronizing.
-
-5. **Minimal Data Collection**: No tracking, analytics, or telemetry in MVP. Incidents are public; no personal data beyond what users provide.
-
-6. **Clear Limitations**: README and design doc acknowledge limitations; deployment instructions include warnings about at-scale needs.
+```
+panw-case-study/
+├── app/
+│   ├── main.py                    # FastAPI app, DB init, seed loader
+│   ├── models.py                  # SQLAlchemy Incident model
+│   ├── database.py                # DB engine, session, Base
+│   ├── routes/
+│   │   └── incidents.py           # All route handlers (GET/POST)
+│   └── services/
+│       ├── ai_service.py          # OpenAI integration + low-signal detection
+│       └── fallback_rules.py      # Keyword classifier + low-signal detection
+├── templates/
+│   ├── base.html                  # Layout with nav, footer
+│   ├── index.html                 # Incident feed with filters
+│   ├── create.html                # Report form + warning UI
+│   └── detail.html                # Incident detail + status update
+├── static/
+│   └── style.css                  # Minimal CSS (warning/error boxes)
+├── data/
+│   └── incidents_seed.json        # 10 synthetic incidents
+├── tests/
+│   └── test_happy_path.py         # 12 tests
+├── requirements.txt
+├── .env.example
+├── Dockerfile
+├── README.md                      # Quick reference (template format)
+└── DESIGN.md                      # This file
+```
 
 ---
 
 ## Testing Strategy
 
-### Test Coverage (12 tests)
-- **Happy path**: Create, view, filter, search
-- **Audience-specific**: Elderly user checklist is simpler
-- **Low-signal filtering**: Brief reports trigger warning; checkbox required
-- **Filter & search**: Category, audience, keyword filters work correctly
-- **Detail page**: Incident displays with all fields
+### Coverage: 12 Tests
 
-### In-Memory SQLite
-Tests use `sqlite:///:memory:` database, so each test runs in isolation without file I/O. Fast, clean, no cleanup needed.
+| Category | Tests | What's Verified |
+|----------|-------|-----------------|
+| **Create & View** | 3 | Submit incident → saved → detail page renders with all fields |
+| **Filter & Search** | 3 | Category filter, audience filter, keyword search all return correct subsets |
+| **Audience-Specific** | 2 | Elderly user gets simpler checklist; different audiences get different guidance |
+| **Low-Signal Flow** | 2 | Brief report shows warning; checkbox confirmation allows save |
+| **Fallback** | 2 | AI returns None → fallback works; AI throws exception → fallback works |
 
-### Fixtures
-Custom pytest fixtures for FastAPI test client and database session, following FastAPI testing best practices.
+### Test Infrastructure
+- **In-memory SQLite**: `sqlite:///:memory:` — each test is isolated, no file I/O
+- **Fixture override**: `get_db` dependency overridden with test session
+- **TestClient**: Synchronous HTTP client wrapping the FastAPI app
+- **No mocking of AI**: Tests use fallback path (no API key in test env) — validates real behavior
+
+### Running
+```bash
+pytest tests/ -v                          # all tests
+pytest tests/test_happy_path.py -v        # specific file
+pytest tests/ --cov=app --cov-report=html # with coverage
+```
 
 ---
 
-## Deployment Notes
+## Responsible AI Considerations
 
-### Quick Local Dev
+### 1. Transparency
+- Every incident shows "AI ANALYZED" or "RULE-BASED" badge — users always know the source
+- Low-signal detection uses simple, explainable heuristics (character count, word count)
+- No hidden scoring or opaque ML models
+
+### 2. User Agency
+- Low-signal warning is advisory, never blocking
+- Users can override AI-assigned category and status
+- Confirmation checkbox is explicit consent, not a trick
+
+### 3. Graceful Degradation
+- App works fully without OpenAI API key
+- Fallback classifier was built first, AI layered on top
+- Network errors, rate limits, malformed responses all handled silently
+
+### 4. Audience-Aware Tone
+- System prompts adjust language complexity per audience
+- Elderly users get simpler steps; remote workers get technical details
+- Respects cognitive load without being patronizing
+
+### 5. Bias Awareness
+- OpenAI may reflect societal biases in security perception
+- Heuristic low-signal filter is rule-based, reducing (but not eliminating) bias risk
+- Hardcoded thresholds may disadvantage terse but valid reports (acknowledged limitation)
+
+### 6. Data Minimization
+- No user tracking, analytics, or telemetry
+- No authentication = no user profiles stored
+- Incidents contain only what the user explicitly provides
+- Synthetic seed data only — no real personal data
+
+---
+
+## Deployment
+
+### Local Development
 ```bash
 uvicorn app.main:app --reload
 ```
 
-### Production (Docker)
+### Docker
 ```bash
 docker build -t community-guardian .
 docker run -p 8000:8000 -e OPENAI_API_KEY=sk-... community-guardian
 ```
 
 ### Environment Variables
-- `OPENAI_API_KEY`: Required for AI classification (optional; fallback rules used if missing)
-- `DATABASE_URL`: Defaults to `sqlite:///community_guardian.db`; override for PostgreSQL
+| Variable | Required | Default | Purpose |
+|----------|----------|---------|---------|
+| `OPENAI_API_KEY` | No | None | Enables AI classification; fallback used if missing |
+| `DATABASE_URL` | No | `sqlite:///community_guardian.db` | Override for PostgreSQL in production |
 
-### Database Setup
-Automatic on startup via `Base.metadata.create_all()` and seed loading. No manual migration steps needed.
+### Database
+- Auto-created on startup via `Base.metadata.create_all()`
+- Auto-seeded with 10 incidents if table is empty
+- No manual migration steps required
+
+---
+
+## Future Enhancements
+
+### Short-Term (Next Sprint)
+1. **Feed quality scoring** — upvote/downvote; deprioritize consistently-downvoted low-signal reports
+2. **Rate limiting** — per-IP throttling to prevent spam floods
+3. **Pagination** — cursor-based pagination for feeds with 100+ incidents
+4. **User authentication** — session-based login; track who reported what
+
+### Medium-Term (Next Month)
+5. **Semantic similarity detection** — embeddings to identify and merge duplicate reports
+6. **Community validation** — "Have you experienced this?" → Verified badge at 10+ confirmations
+7. **Severity auto-adjustment** — retrain weighting if low-signal reports are later confirmed critical
+8. **Notification system** — email/SMS alerts for high-severity incidents; unsubscribe controls
+
+### Long-Term (V2)
+9. **Geo-tagging** — filter by neighborhood (coarse, privacy-preserving buckets)
+10. **Incident timeline** — "Reported X times this week; trend is up/down"
+11. **User reputation** — submission quality tracking; badges for helpful reporters
+12. **Mobile app** — native iOS/Android with push notifications and offline drafts
+13. **Multi-language support** — fallback keywords and AI prompts in Spanish, Mandarin, etc.
+14. **Markdown editor** — rich text descriptions with better formatting
 
 ---
 
 ## Summary
 
-**Community Guardian** demonstrates a responsible, user-centric approach to community safety:
+Community Guardian demonstrates a responsible, user-centric approach to community safety:
+
 - **AI-powered but human-controlled**: Suggestions, not mandates
 - **Accessible**: Audience-aware guidance meets users where they are
-- **Transparent**: Heuristics are simple and explainable
-- **Resilient**: Fallback classifier ensures functionality without external APIs
+- **Transparent**: Heuristics are simple and explainable; AI vs rule-based is always visible
+- **Resilient**: Fallback classifier ensures the app works without external APIs
 - **Testable**: 12 passing tests cover core flows and edge cases
 
-The **noise-to-signal filtering** feature exemplifies responsible AI in practice: it improves feed quality without silencing users, giving full agency while nudging toward better signal. A balance between automation and user control.
-
-**Time spent**: ~5.5 hours (architecture planning, implementation, testing, UI refinement, error debugging).
-
----
-
-## References
-- [FastAPI Docs](https://fastapi.tiangolo.com/)
-- [SQLAlchemy ORM](https://docs.sqlalchemy.org/)
-- [OpenAI API](https://platform.openai.com/docs/)
-- [pytest Docs](https://docs.pytest.org/)
+The **noise-to-signal filtering** exemplifies responsible AI: it improves feed quality without silencing users, giving full agency while nudging toward better signal.
