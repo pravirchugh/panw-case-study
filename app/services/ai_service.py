@@ -1,0 +1,98 @@
+"""
+OpenAI-powered incident analyzer.
+
+Calls GPT-3.5-turbo to summarize and categorize an incident report.
+Returns None on ANY failure so the caller can fall back to rule-based
+classification.
+"""
+
+import json
+import logging
+import os
+
+from openai import OpenAI
+
+logger = logging.getLogger(__name__)
+
+VALID_CATEGORIES = {
+    "phishing",
+    "scam_fraud",
+    "network_security",
+    "physical_safety",
+    "identity_theft",
+    "other",
+}
+VALID_SEVERITIES = {"low", "medium", "high"}
+
+SYSTEM_PROMPT = """You are a community safety analyst. Given an incident report, analyze it and return a JSON object with exactly these fields:
+
+- "category": one of "phishing", "scam_fraud", "network_security", "physical_safety", "identity_theft", "other"
+- "severity": one of "low", "medium", "high"
+- "summary": 1-2 calm, factual sentences summarizing the incident
+- "checklist": a JSON array of 3-4 short, actionable steps the reporter should take
+
+Return ONLY valid JSON, no markdown fences or extra text."""
+
+
+def analyze_incident(description: str) -> dict | None:
+    """
+    Call OpenAI to classify and summarize an incident.
+
+    Returns a dict with {category, severity, summary, checklist} on success,
+    or None on any failure (missing key, API error, bad response, etc.).
+    """
+    api_key = os.getenv("OPENAI_API_KEY", "")
+    if not api_key or api_key == "your-openai-api-key-here":
+        logger.info("No valid OPENAI_API_KEY set; skipping AI analysis.")
+        return None
+
+    try:
+        client = OpenAI(api_key=api_key)
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": description},
+            ],
+            temperature=0.3,
+            max_tokens=500,
+        )
+
+        raw = response.choices[0].message.content
+        if not raw:
+            logger.warning("Empty response from OpenAI.")
+            return None
+
+        # Strip markdown fences if the model wraps them anyway
+        raw = raw.strip()
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1] if "\n" in raw else raw[3:]
+        if raw.endswith("```"):
+            raw = raw[:-3]
+        raw = raw.strip()
+
+        data = json.loads(raw)
+
+        # Validate required fields
+        category = data.get("category", "other")
+        severity = data.get("severity", "medium")
+        summary = data.get("summary", "")
+        checklist = data.get("checklist", [])
+
+        if category not in VALID_CATEGORIES:
+            category = "other"
+        if severity not in VALID_SEVERITIES:
+            severity = "medium"
+        if not isinstance(checklist, list):
+            checklist = [str(checklist)]
+
+        return {
+            "category": category,
+            "severity": severity,
+            "summary": summary,
+            "checklist": json.dumps(checklist),
+        }
+
+    except Exception:
+        logger.exception("AI analysis failed; will use fallback.")
+        return None

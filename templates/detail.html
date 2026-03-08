@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{{ incident.title }} - Community Guardian{% endblock %}
+
+{% block content %}
+<a href="/" class="back-link">&larr; Back to all incidents</a>
+
+<div class="incident-detail">
+    <div class="detail-header">
+        <h1>{{ incident.title }}</h1>
+        <div class="detail-badges">
+            <span class="badge severity-{{ incident.severity }}">{{ incident.severity | title }}</span>
+            <span class="badge status-{{ incident.status }}">{{ incident.status | title }}</span>
+            <span class="badge category-badge">{{ incident.category | replace("_", " ") | title }}</span>
+            {% if incident.ai_generated %}
+            <span class="badge ai-badge">AI Analyzed</span>
+            {% else %}
+            <span class="badge rule-badge">Rule-Based</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-section">
+        <h2>Description</h2>
+        <p>{{ incident.description }}</p>
+    </div>
+
+    <div class="detail-section">
+        <h2>Analysis Summary</h2>
+        <p>{{ incident.summary }}</p>
+    </div>
+
+    {% if checklist_items %}
+    <div class="detail-section">
+        <h2>Recommended Actions</h2>
+        <ol class="checklist">
+            {% for item in checklist_items %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ol>
+    </div>
+    {% endif %}
+
+    <div class="detail-section">
+        <h2>Update Incident</h2>
+        <form method="post" action="/incidents/{{ incident.id }}/update" class="update-form">
+            <div class="form-row">
+                <div>
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        {% for st in statuses %}
+                        <option value="{{ st }}" {% if incident.status == st %}selected{% endif %}>{{ st | title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if incident.category == cat %}selected{% endif %}>{{ cat | replace("_", " ") | title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="detail-meta">
+        <p>Reported: {{ incident.created_at.strftime('%B %d, %Y at %H:%M UTC') }}</p>
+        {% if incident.updated_at %}
+        <p>Last updated: {{ incident.updated_at.strftime('%B %d, %Y at %H:%M UTC') }}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
