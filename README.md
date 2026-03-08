@@ -98,6 +98,21 @@ The incident feed supports:
 - **Severity filter** (low, medium, high)
 - **Status filter** (open, reviewed, resolved)
 
+### AI Analyzed vs Rule-Based: What Changes
+
+| | **Rule-Based (Fallback)** | **AI Analyzed (OpenAI)** |
+|---|---|---|
+| **Badge** | Yellow "RULE-BASED" | Purple "AI ANALYZED" |
+| **Summary** | Generic template per category | Context-specific to the actual report |
+| **Checklist** | Canned 4 steps per category | Tailored to the specific incident details |
+| **Speed** | Instant | ~1-2 seconds (API call) |
+| **Reliability** | Always works, no external dependency | Falls back to rules on any failure |
+
+**Example:** A tech support scam report about a fake virus pop-up demanding $299:
+- **Rule-based summary:** "This report describes a potential scam or fraud attempt seeking money or sensitive information."
+- **AI summary:** "Encountered a scam pop-up claiming computer infection and demanding payment for fake tech support."
+- **AI checklist:** "Do not call the provided number or download any software" / "Force close the browser tab or restart the browser" -- specific to the pop-up scenario vs generic "report to FTC" advice.
+
 ---
 
 ## Testing
@@ -124,7 +139,7 @@ Tests use an in-memory SQLite database and TestClient, so they run in ~0.05s wit
 
 - **Did you use an AI assistant?** Yes -- Claude (Anthropic) for code generation and architecture decisions.
 - **How did you verify the suggestions?** Manually reviewed all generated code, ran the test suite, and tested the full flow in the browser. Verified AI classification output against expected categories for each seed incident.
-- **Example of a suggestion rejected or changed:** Initially considered using async OpenAI calls throughout, but switched to synchronous calls since FastAPI runs sync route handlers in a threadpool anyway, and it simplified the code and testing significantly. Also rejected free-form AI severity scoring in favor of bounded severity levels (low/medium/high) to reduce ambiguity and make testing deterministic.
+- **Example of a suggestion rejected or changed:** The AI assistant initially suggested using the AI model for real-time threat classification only (categorize + assign severity), without generating a human-readable summary or tailored checklist. I pushed for the AI to also produce a contextual summary and incident-specific action steps on each submission, since the core value proposition of the app is turning noisy reports into calm, actionable guidance. This made the AI output significantly more useful compared to just labeling a category, and the contrast with the generic fallback templates is what demonstrates the AI's real value.
 
 ---
 
