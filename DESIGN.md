@@ -1,7 +1,7 @@
 # Community Guardian — Design Documentation
 
 ## Candidate Name:
-Pravin Chugh
+Pravir Chugh
 
 ## Scenario Chosen:
 **Scenario 3: Community Safety & Digital Wellness**
@@ -17,7 +17,7 @@ A community-driven incident reporting platform that empowers users to report loc
 
 ### Prerequisites:
 - Python 3.11+
-- pip/venv
+- pip/venvg
 - OpenAI API key (for AI-powered incident analysis)
 - SQLite3 (included with Python)
 
