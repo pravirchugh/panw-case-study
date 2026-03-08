@@ -31,6 +31,7 @@ def list_incidents(
     category: str = Query("", description="Filter by category"),
     severity: str = Query("", description="Filter by severity"),
     status: str = Query("", description="Filter by status"),
+    audience: str = Query("", description="Filter by audience"),
     db: Session = Depends(get_db),
 ):
     query = db.query(Incident)
@@ -46,6 +47,8 @@ def list_incidents(
         query = query.filter(Incident.severity == severity)
     if status and status in VALID_STATUSES:
         query = query.filter(Incident.status == status)
+    if audience and audience in VALID_AUDIENCES:
+        query = query.filter(Incident.audience_type == audience)
 
     incidents = query.order_by(Incident.created_at.desc()).all()
 
@@ -62,9 +65,11 @@ def list_incidents(
             "category": category,
             "severity": severity,
             "status": status,
+            "audience": audience,
             "categories": VALID_CATEGORIES,
             "severities": VALID_SEVERITIES,
             "statuses": VALID_STATUSES,
+            "audiences": VALID_AUDIENCES,
             "audience_labels": AUDIENCE_LABELS,
         },
     )
@@ -92,6 +97,7 @@ def create_incident(
     title: str = Form(""),
     description: str = Form(""),
     audience_type: str = Form("neighborhood_group"),
+    confirm_low_signal: str = Form(default="", alias="_confirm_low_signal"),
     db: Session = Depends(get_db),
 ):
     # Validate input
@@ -126,6 +132,27 @@ def create_incident(
         analysis = classify_incident(data.description, data.audience_type)
         ai_generated = False
 
+    # Check for low-signal reports
+    is_low_signal = analysis.get("is_low_signal", False)
+    signal_quality_reason = analysis.get("signal_quality_reason")
+
+    # If low-signal and not confirmed, show warning
+    if is_low_signal and confirm_low_signal != "on":
+        return templates.TemplateResponse(
+            "create.html",
+            {
+                "request": request,
+                "title": title,
+                "description": description,
+                "audience_type": audience_type,
+                "audiences": VALID_AUDIENCES,
+                "audience_labels": AUDIENCE_LABELS,
+                "low_signal_warning": signal_quality_reason,
+            },
+            status_code=200,
+        )
+
+    # Save to DB (only if high-signal or confirmed low-signal)
     incident = Incident(
         title=data.title,
         description=data.description,
@@ -135,6 +162,8 @@ def create_incident(
         checklist=analysis["checklist"],
         audience_type=data.audience_type,
         ai_generated=ai_generated,
+        is_low_signal=is_low_signal,
+        signal_quality_reason=signal_quality_reason,
         status="open",
     )
     db.add(incident)

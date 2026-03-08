@@ -25,6 +25,12 @@
         <option value="{{ st }}" {% if status == st %}selected{% endif %}>{{ st | title }}</option>
         {% endfor %}
     </select>
+    <select name="audience">
+        <option value="">All Audiences</option>
+        {% for aud in audiences %}
+        <option value="{{ aud }}" {% if audience == aud %}selected{% endif %}>{{ audience_labels[aud] }}</option>
+        {% endfor %}
+    </select>
     <button type="submit" class="btn">Filter</button>
 </form>
 

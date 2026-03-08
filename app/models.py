@@ -21,6 +21,8 @@ class Incident(Base):
         String(30), nullable=False, default="neighborhood_group"
     )
     ai_generated: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_low_signal: Mapped[bool] = mapped_column(Boolean, default=False)
+    signal_quality_reason: Mapped[str] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc)
     )
