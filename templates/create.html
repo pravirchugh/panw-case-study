@@ -17,6 +17,15 @@
 </div>
 {% endif %}
 
+{% if low_signal_warning %}
+<div class="warning-box">
+    <strong>⚠️ Note:</strong> {{ low_signal_warning }}
+    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
+        You can still post, but consider refining your report for better analysis.
+    </p>
+</div>
+{% endif %}
+
 <form method="post" action="/incidents" class="incident-form">
     <label for="title">Title</label>
     <input type="text" id="title" name="title" value="{{ title }}" placeholder="Brief title for the incident" required maxlength="200">
@@ -31,6 +40,15 @@
         {% endfor %}
     </select>
     <p class="field-hint">We tailor our safety guidance to your needs.</p>
+
+    {% if low_signal_warning %}
+    <div style="margin: 1rem 0; padding: 0.75rem; background: #fffbeb; border-left: 3px solid #fbbf24; border-radius: 4px;">
+        <label style="display: flex; align-items: center; cursor: pointer; font-size: 0.9rem;">
+            <input type="checkbox" name="_confirm_low_signal" style="margin-right: 0.5rem;">
+            I understand and want to post this report anyway
+        </label>
+    </div>
+    {% endif %}
 
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">Submit Report</button>

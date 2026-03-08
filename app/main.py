@@ -45,6 +45,8 @@ def seed_database():
                 checklist=json.dumps(item["checklist"]),
                 ai_generated=False,
                 audience_type=item.get("audience_type", "neighborhood_group"),
+                is_low_signal=item.get("is_low_signal", False),
+                signal_quality_reason=item.get("signal_quality_reason"),
             )
             db.add(incident)
         db.commit()

@@ -114,11 +114,25 @@ def analyze_incident(description: str, audience_type: str = "neighborhood_group"
         if not isinstance(checklist, list):
             checklist = [str(checklist)]
 
+        # Detect low-signal reports (venting, too brief, etc.)
+        desc_len = len(description.strip())
+        word_count = len(description.split())
+        is_low_signal = desc_len < 30 or word_count < 8
+
+        signal_quality_reason = None
+        if is_low_signal:
+            if desc_len < 30:
+                signal_quality_reason = "Report is quite brief. Adding more details helps us analyze better."
+            else:
+                signal_quality_reason = "Report lacks detail. Please describe the incident more thoroughly."
+
         return {
             "category": category,
             "severity": severity,
             "summary": summary,
             "checklist": json.dumps(checklist),
+            "is_low_signal": is_low_signal,
+            "signal_quality_reason": signal_quality_reason,
         }
 
     except Exception:

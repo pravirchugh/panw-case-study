@@ -6,8 +6,10 @@
     "severity": "medium",
     "status": "open",
     "audience_type": "neighborhood_group",
-    "summary": "This report describes a possible phishing attempt designed to steal credentials or personal information. Exercise caution and avoid interacting with the suspicious message.",
-    "checklist": ["Do not click any links or download attachments from the suspicious message.", "If you already clicked, change your password immediately for the affected account.", "Enable multi-factor authentication (MFA) on your accounts.", "Report the phishing attempt to the impersonated organization via their official website."]
+    "summary": "A phishing text targeting bank customers has been reported in our area. Share this alert with neighbors who may have received similar messages — scammers often target entire zip codes at once.",
+    "checklist": ["Do not click any links in the message — delete it immediately.", "Alert your neighbors and local community group so others stay vigilant.", "Report the message to your bank using the number on the back of your card.", "File a report with the FTC at reportfraud.ftc.gov to help protect others in your area."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   },
   {
     "title": "IRS phone scam demanding gift cards",
@@ -17,7 +19,9 @@
     "status": "reviewed",
     "audience_type": "elderly_user",
     "summary": "Someone pretending to be from the IRS called and tried to scare you into paying with gift cards. This is a well-known scam. The real IRS will never call and demand gift cards.",
-    "checklist": ["Hang up the phone. Do not call the number back.", "Do not buy or send any gift cards.", "Tell a family member or someone you trust about the call.", "Call the real IRS at 1-800-829-1040 if you are worried about your taxes."]
+    "checklist": ["Hang up the phone. Do not call the number back.", "Do not buy or send any gift cards.", "Tell a family member or someone you trust about the call.", "Call the real IRS at 1-800-829-1040 if you are worried about your taxes."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   },
   {
     "title": "Neighbor's Wi-Fi network compromised",
@@ -27,7 +31,9 @@
     "status": "open",
     "audience_type": "remote_worker",
     "summary": "Unauthorized access to a home router has been reported, with unknown devices on the network and admin credentials changed. This represents a serious network compromise that could expose all connected devices.",
-    "checklist": ["Factory-reset the router using the physical reset button, then reconfigure with a strong WPA3 password.", "Update the router firmware to the latest version from the manufacturer's website.", "Change the default admin credentials and disable WPS and remote management.", "Run a full malware scan on all devices that were connected to the compromised network."]
+    "checklist": ["Factory-reset the router using the physical reset button, then reconfigure with a strong WPA3 password.", "Update the router firmware to the latest version from the manufacturer's website.", "Change the default admin credentials and disable WPS and remote management.", "Run a full malware scan on all devices that were connected to the compromised network."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   },
   {
     "title": "Unauthorized credit card opened in my name",
@@ -37,7 +43,9 @@
     "status": "open",
     "audience_type": "neighborhood_group",
     "summary": "This report indicates possible identity theft or unauthorized use of personal information. Take immediate steps to secure your accounts and credit.",
-    "checklist": ["Place a fraud alert or credit freeze with all three credit bureaus (Equifax, Experian, TransUnion).", "Review your credit report for any unauthorized accounts or inquiries.", "File an identity theft report at identitytheft.gov.", "Monitor your bank and credit card statements closely for unfamiliar charges."]
+    "checklist": ["Place a fraud alert or credit freeze with all three credit bureaus (Equifax, Experian, TransUnion).", "Review your credit report for any unauthorized accounts or inquiries.", "File an identity theft report at identitytheft.gov.", "Monitor your bank and credit card statements closely for unfamiliar charges."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   },
   {
     "title": "Car break-ins on Maple Street",
@@ -47,7 +55,9 @@
     "status": "reviewed",
     "audience_type": "neighborhood_group",
     "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
-    "checklist": ["If you are in immediate danger, call 911 or your local emergency number.", "Document the incident with photos, timestamps, and descriptions.", "File a report with your local police department.", "Alert neighbors or community members to increase awareness."]
+    "checklist": ["If you are in immediate danger, call 911 or your local emergency number.", "Document the incident with photos, timestamps, and descriptions.", "File a report with your local police department.", "Alert neighbors or community members to increase awareness."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   },
   {
     "title": "Package delivery scam text messages",
@@ -57,7 +67,9 @@
     "status": "open",
     "audience_type": "elderly_user",
     "summary": "Fake text messages are going around pretending to be from a delivery company. They ask you to pay a small fee, but the website is not real and will steal your credit card information.",
-    "checklist": ["Do not click any links in the text message.", "Delete the text message right away.", "If you entered your credit card information, call your bank immediately.", "Ask a trusted family member or friend to help you check if you have any real deliveries expected."]
+    "checklist": ["Do not click any links in the text message.", "Delete the text message right away.", "If you entered your credit card information, call your bank immediately.", "Ask a trusted family member or friend to help you check if you have any real deliveries expected."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   },
   {
     "title": "Ransomware warning from local business network",
@@ -67,7 +79,9 @@
     "status": "open",
     "audience_type": "remote_worker",
     "summary": "A ransomware attack has been reported on a local business network. Systems are encrypted and attackers are demanding cryptocurrency payment. This highlights the importance of network segmentation and offline backups.",
-    "checklist": ["Verify your own backup strategy: ensure you have offline or air-gapped backups of critical data.", "Check that your endpoint protection and OS patches are up to date on all work devices.", "Enable network-level DNS filtering to block known malicious domains.", "Review your firewall rules and disable unnecessary inbound ports, especially RDP (3389)."]
+    "checklist": ["Verify your own backup strategy: ensure you have offline or air-gapped backups of critical data.", "Check that your endpoint protection and OS patches are up to date on all work devices.", "Enable network-level DNS filtering to block known malicious domains.", "Review your firewall rules and disable unnecessary inbound ports, especially RDP (3389)."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   },
   {
     "title": "Vandalism at community park",
@@ -77,7 +91,9 @@
     "status": "resolved",
     "audience_type": "neighborhood_group",
     "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
-    "checklist": ["If you are in immediate danger, call 911 or your local emergency number.", "Document the incident with photos, timestamps, and descriptions.", "File a report with your local police department.", "Alert neighbors or community members to increase awareness."]
+    "checklist": ["If you are in immediate danger, call 911 or your local emergency number.", "Document the incident with photos, timestamps, and descriptions.", "File a report with your local police department.", "Alert neighbors or community members to increase awareness."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   },
   {
     "title": "Suspicious email asking for company login credentials",
@@ -87,7 +103,9 @@
     "status": "open",
     "audience_type": "remote_worker",
     "summary": "A credential-harvesting phishing email is targeting co-working space members, impersonating building management with a fake login portal. This could compromise corporate VPN and SSO credentials if reused passwords are entered.",
-    "checklist": ["Do not click the link. Report the email as phishing in your mail client and notify your IT/security team.", "If you entered credentials, immediately rotate your password and any accounts sharing that password.", "Enable hardware-key or app-based MFA on all work accounts (avoid SMS-based 2FA).", "Check your email account's recent login activity and authorized app connections for suspicious entries."]
+    "checklist": ["Do not click the link. Report the email as phishing in your mail client and notify your IT/security team.", "If you entered credentials, immediately rotate your password and any accounts sharing that password.", "Enable hardware-key or app-based MFA on all work accounts (avoid SMS-based 2FA).", "Check your email account's recent login activity and authorized app connections for suspicious entries."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   },
   {
     "title": "Elderly neighbor targeted by tech support scam",
@@ -97,6 +115,8 @@
     "status": "reviewed",
     "audience_type": "elderly_user",
     "summary": "A fake virus warning appeared on the computer and tricked someone into calling a scammer. The scammer asked for remote access and money. Microsoft will never show pop-ups asking you to call a phone number.",
-    "checklist": ["Turn off the computer right away to stop the scammer from accessing it.", "Do not send any money or give out bank information.", "Ask a family member or trusted friend to help check the computer for problems.", "Call your bank if you already sent money or shared your account details."]
+    "checklist": ["Turn off the computer right away to stop the scammer from accessing it.", "Do not send any money or give out bank information.", "Ask a family member or trusted friend to help check the computer for problems.", "Call your bank if you already sent money or shared your account details."],
+    "is_low_signal": false,
+    "signal_quality_reason": null
   }
 ]

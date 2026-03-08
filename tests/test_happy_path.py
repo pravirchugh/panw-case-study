@@ -81,6 +81,36 @@ def test_search_incidents(client):
     assert response.status_code == 200
     assert "Router compromised" not in response.text
 
+def test_filter_by_audience(client):
+    """Creating incidents with different audiences and filtering should isolate one."""
+    # Remote worker incident
+    client.post(
+        "/incidents",
+        data={
+            "title": "Home network attack",
+            "description": "Strange traffic and devices on my home router suggesting compromise.",
+            "audience_type": "remote_worker",
+        },
+        follow_redirects=True,
+    )
+
+    # Elderly user incident
+    client.post(
+        "/incidents",
+        data={
+            "title": "Phone scam call",
+            "description": "Caller claims to be from the bank asking for account info over the phone.",
+            "audience_type": "elderly_user",
+        },
+        follow_redirects=True,
+    )
+
+    # Filter by elderly_user
+    response = client.get("/?audience=elderly_user")
+    assert response.status_code == 200
+    assert "Phone scam call" in response.text
+    assert "Home network attack" not in response.text
+
 
 def test_audience_specific_checklist(client):
     """Elderly user audience produces simpler, tailored checklist items."""
@@ -98,3 +128,37 @@ def test_audience_specific_checklist(client):
     assert "trusted" in response.text.lower() or "family" in response.text.lower()
     # Should show the Elderly User audience badge
     assert "Elderly User" in response.text
+
+
+def test_low_signal_warning(client):
+    """Low-signal reports (too brief) show warning before saving."""
+    # Submit a very brief description (< 30 chars)
+    response = client.post(
+        "/incidents",
+        data={
+            "title": "Suspicious text",
+            "description": "Got a phishing text.",  # Only 20 chars
+            "audience_type": "neighborhood_group",
+        },
+        follow_redirects=False,
+    )
+    # Should NOT redirect yet - should show warning
+    assert response.status_code == 200
+    assert "quite brief" in response.text.lower() or "low-signal" in response.text.lower()
+    # Checkbox should be required to proceed
+    assert "_confirm_low_signal" in response.text
+
+    # Now resubmit with checkbox confirmed
+    response = client.post(
+        "/incidents",
+        data={
+            "title": "Suspicious text",
+            "description": "Got a phishing text.",
+            "audience_type": "neighborhood_group",
+            "_confirm_low_signal": "on",
+        },
+        follow_redirects=True,
+    )
+    # Should now save and show detail page
+    assert response.status_code == 200
+    assert "Suspicious text" in response.text

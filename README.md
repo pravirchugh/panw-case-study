@@ -97,6 +97,7 @@ The incident feed supports:
 - **Category filter** (phishing, scam/fraud, network security, etc.)
 - **Severity filter** (low, medium, high)
 - **Status filter** (open, reviewed, resolved)
+- **Audience filter** (Remote Worker, Elderly User, Neighborhood Group)
 
 ### AI Analyzed vs Rule-Based: What Changes
 
@@ -121,7 +122,7 @@ The incident feed supports:
 
 | Test File | Tests | What It Covers |
 |-----------|-------|----------------|
-| `test_happy_path.py` | 3 | Create incident, view detail, filter by category, text search |
+| `test_happy_path.py` | 4 | Create incident, view detail, filter by category, audience, text search |
 | `test_ai_fallback.py` | 2 | AI returns None -> fallback works; AI throws exception -> fallback works |
 | `test_validation.py` | 3 | Empty description -> 422 error; empty title -> 422 error; nonexistent incident -> 404 |
 
