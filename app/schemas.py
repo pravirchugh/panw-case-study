@@ -10,11 +10,25 @@ VALID_CATEGORIES = [
 ]
 VALID_SEVERITIES = ["low", "medium", "high"]
 VALID_STATUSES = ["open", "reviewed", "resolved"]
+VALID_AUDIENCES = ["neighborhood_group", "remote_worker", "elderly_user"]
+AUDIENCE_LABELS = {
+    "neighborhood_group": "Neighborhood Group",
+    "remote_worker": "Remote Worker",
+    "elderly_user": "Elderly User",
+}
 
 
 class IncidentCreate(BaseModel):
     title: str
     description: str
+    audience_type: str = "neighborhood_group"
+
+    @field_validator("audience_type")
+    @classmethod
+    def valid_audience(cls, v: str) -> str:
+        if v not in VALID_AUDIENCES:
+            raise ValueError(f"Audience must be one of: {', '.join(VALID_AUDIENCES)}")
+        return v
 
     @field_validator("title")
     @classmethod

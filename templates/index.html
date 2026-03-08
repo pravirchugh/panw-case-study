@@ -49,6 +49,7 @@
             {% else %}
             <span class="badge rule-badge">Rule-Based</span>
             {% endif %}
+            <span class="badge audience-badge">{{ audience_labels.get(inc.audience_type, "Community") }}</span>
             <span class="timestamp">{{ inc.created_at.strftime('%b %d, %Y %H:%M') }}</span>
         </div>
         <p class="card-summary">{{ inc.summary[:150] }}{% if inc.summary|length > 150 %}...{% endif %}</p>

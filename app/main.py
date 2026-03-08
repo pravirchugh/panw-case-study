@@ -44,6 +44,7 @@ def seed_database():
                 summary=item["summary"],
                 checklist=json.dumps(item["checklist"]),
                 ai_generated=False,
+                audience_type=item.get("audience_type", "neighborhood_group"),
             )
             db.add(incident)
         db.commit()

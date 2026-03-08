@@ -17,6 +17,7 @@
             {% else %}
             <span class="badge rule-badge">Rule-Based</span>
             {% endif %}
+            <span class="badge audience-badge">{{ audience_labels.get(incident.audience_type, "Community") }}</span>
         </div>
     </div>
 

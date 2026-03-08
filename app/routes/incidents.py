@@ -9,7 +9,14 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Incident
-from app.schemas import VALID_CATEGORIES, VALID_SEVERITIES, VALID_STATUSES, IncidentCreate
+from app.schemas import (
+    AUDIENCE_LABELS,
+    VALID_AUDIENCES,
+    VALID_CATEGORIES,
+    VALID_SEVERITIES,
+    VALID_STATUSES,
+    IncidentCreate,
+)
 from app.services.ai_service import analyze_incident
 from app.services.fallback_rules import classify_incident
 
@@ -58,6 +65,7 @@ def list_incidents(
             "categories": VALID_CATEGORIES,
             "severities": VALID_SEVERITIES,
             "statuses": VALID_STATUSES,
+            "audience_labels": AUDIENCE_LABELS,
         },
     )
 
@@ -65,7 +73,16 @@ def list_incidents(
 @router.get("/incidents/new", response_class=HTMLResponse)
 def new_incident_form(request: Request):
     return templates.TemplateResponse(
-        "create.html", {"request": request, "errors": [], "title": "", "description": ""}
+        "create.html",
+        {
+            "request": request,
+            "errors": [],
+            "title": "",
+            "description": "",
+            "audience_type": "neighborhood_group",
+            "audiences": VALID_AUDIENCES,
+            "audience_labels": AUDIENCE_LABELS,
+        },
     )
 
 
@@ -74,22 +91,31 @@ def create_incident(
     request: Request,
     title: str = Form(""),
     description: str = Form(""),
+    audience_type: str = Form("neighborhood_group"),
     db: Session = Depends(get_db),
 ):
     # Validate input
     try:
-        data = IncidentCreate(title=title, description=description)
+        data = IncidentCreate(title=title, description=description, audience_type=audience_type)
     except ValidationError as e:
         errors = [err["msg"] for err in e.errors()]
         return templates.TemplateResponse(
             "create.html",
-            {"request": request, "errors": errors, "title": title, "description": description},
+            {
+                "request": request,
+                "errors": errors,
+                "title": title,
+                "description": description,
+                "audience_type": audience_type,
+                "audiences": VALID_AUDIENCES,
+                "audience_labels": AUDIENCE_LABELS,
+            },
             status_code=422,
         )
 
     # Try AI analysis first, fall back to rules
     try:
-        ai_result = analyze_incident(data.description)
+        ai_result = analyze_incident(data.description, data.audience_type)
     except Exception:
         ai_result = None
 
@@ -97,7 +123,7 @@ def create_incident(
         analysis = ai_result
         ai_generated = True
     else:
-        analysis = classify_incident(data.description)
+        analysis = classify_incident(data.description, data.audience_type)
         ai_generated = False
 
     incident = Incident(
@@ -107,6 +133,7 @@ def create_incident(
         severity=analysis["severity"],
         summary=analysis["summary"],
         checklist=analysis["checklist"],
+        audience_type=data.audience_type,
         ai_generated=ai_generated,
         status="open",
     )
@@ -133,6 +160,7 @@ def get_incident(request: Request, incident_id: int, db: Session = Depends(get_d
             "checklist_items": checklist_items,
             "statuses": VALID_STATUSES,
             "categories": VALID_CATEGORIES,
+            "audience_labels": AUDIENCE_LABELS,
         },
     )
 

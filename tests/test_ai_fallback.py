@@ -11,6 +11,7 @@ def test_fallback_when_ai_unavailable(client):
             data={
                 "title": "Gift card scam phone call",
                 "description": "Someone called claiming I owe money to the IRS and must pay immediately with gift cards or face arrest. This is clearly a scam.",
+                "audience_type": "elderly_user",
             },
             follow_redirects=True,
         )
@@ -35,6 +36,7 @@ def test_fallback_when_ai_raises_exception(client):
             data={
                 "title": "Ransomware attack on local business",
                 "description": "A local business was hit by ransomware. Their systems are locked and attackers demand cryptocurrency payment. The business has been hacked.",
+                "audience_type": "remote_worker",
             },
             follow_redirects=True,
         )

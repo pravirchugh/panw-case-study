@@ -2,6 +2,7 @@
 OpenAI-powered incident analyzer.
 
 Calls GPT-3.5-turbo to summarize and categorize an incident report.
+Tailors tone and advice based on the reporter's audience type.
 Returns None on ANY failure so the caller can fall back to rule-based
 classification.
 """
@@ -24,17 +25,39 @@ VALID_CATEGORIES = {
 }
 VALID_SEVERITIES = {"low", "medium", "high"}
 
-SYSTEM_PROMPT = """You are a community safety analyst. Given an incident report, analyze it and return a JSON object with exactly these fields:
+AUDIENCE_TONE_INSTRUCTIONS = {
+    "neighborhood_group": (
+        "The reporter is part of a neighborhood community group. "
+        "Use a calm, informative tone. Focus checklist steps on community-level "
+        "actions: alerting neighbors, filing local reports, and collective awareness."
+    ),
+    "remote_worker": (
+        "The reporter is a remote worker concerned about network security and home safety. "
+        "Use a technically precise but accessible tone. Focus checklist steps on "
+        "securing devices, networks, and digital accounts. Include specific technical "
+        "actions like checking router settings, running scans, or enabling MFA."
+    ),
+    "elderly_user": (
+        "The reporter is an elderly user who may be less familiar with technology. "
+        "Use simple, reassuring language. Avoid jargon. Keep checklist steps short and "
+        "very clear. Include a step about asking a trusted family member, friend, or "
+        "official source for help. Emphasize that it is okay to ask for assistance."
+    ),
+}
+
+BASE_SYSTEM_PROMPT = """You are a community safety analyst. Given an incident report, analyze it and return a JSON object with exactly these fields:
 
 - "category": one of "phishing", "scam_fraud", "network_security", "physical_safety", "identity_theft", "other"
 - "severity": one of "low", "medium", "high"
 - "summary": 1-2 calm, factual sentences summarizing the incident
 - "checklist": a JSON array of 3-4 short, actionable steps the reporter should take
 
+{audience_instructions}
+
 Return ONLY valid JSON, no markdown fences or extra text."""
 
 
-def analyze_incident(description: str) -> dict | None:
+def analyze_incident(description: str, audience_type: str = "neighborhood_group") -> dict | None:
     """
     Call OpenAI to classify and summarize an incident.
 
@@ -46,12 +69,17 @@ def analyze_incident(description: str) -> dict | None:
         logger.info("No valid OPENAI_API_KEY set; skipping AI analysis.")
         return None
 
+    audience_instructions = AUDIENCE_TONE_INSTRUCTIONS.get(
+        audience_type, AUDIENCE_TONE_INSTRUCTIONS["neighborhood_group"]
+    )
+    system_prompt = BASE_SYSTEM_PROMPT.format(audience_instructions=audience_instructions)
+
     try:
         client = OpenAI(api_key=api_key)
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": description},
             ],
             temperature=0.3,
