@@ -17,6 +17,9 @@ class Incident(Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="open")
     summary: Mapped[str] = mapped_column(Text, nullable=True)
     checklist: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string
+    audience_type: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="neighborhood_group"
+    )
     ai_generated: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc)

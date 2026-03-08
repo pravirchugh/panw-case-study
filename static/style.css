@@ -69,10 +69,13 @@ footer { text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.8rem; }
 .category-badge { background: #f1f5f9; color: #475569; }
 .ai-badge { background: #ede9fe; color: #6d28d9; }
 .rule-badge { background: #fef3c7; color: #92400e; }
+.audience-badge { background: #e0f2fe; color: #0369a1; }
 
 /* ===== Forms ===== */
 .incident-form { max-width: 640px; }
 .incident-form label { display: block; margin-top: 1rem; margin-bottom: 0.25rem; font-weight: 500; font-size: 0.9rem; }
+.incident-form select { width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.9rem; font-family: inherit; }
+.field-hint { font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem; }
 .incident-form input, .incident-form textarea {
     width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #d1d5db; border-radius: 6px;
     font-size: 0.9rem; font-family: inherit;

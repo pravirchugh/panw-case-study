@@ -23,6 +23,21 @@ def test_empty_title_returns_error(client):
     assert "required" in response.text.lower() or "title" in response.text.lower()
 
 
+def test_invalid_audience_type_returns_error(client):
+    """Submitting with an invalid audience type returns 422 with error message."""
+    response = client.post(
+        "/incidents",
+        data={
+            "title": "Test incident",
+            "description": "This is a valid description with enough characters.",
+            "audience_type": "invalid_audience",
+        },
+        follow_redirects=True,
+    )
+    assert response.status_code == 422
+    assert "audience" in response.text.lower()
+
+
 def test_nonexistent_incident_returns_404(client):
     """Accessing an incident that doesn't exist returns 404."""
     response = client.get("/incidents/99999")

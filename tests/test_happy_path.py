@@ -9,6 +9,7 @@ def test_create_and_view_incident(client):
         data={
             "title": "Suspicious email from unknown sender",
             "description": "Received an email asking me to click a link and verify my bank account credentials. The sender address looks fake.",
+            "audience_type": "remote_worker",
         },
         follow_redirects=False,
     )
@@ -36,6 +37,7 @@ def test_filter_by_category(client):
         data={
             "title": "Phishing text message",
             "description": "Got a text pretending to be my bank asking me to click a link to verify my account.",
+            "audience_type": "neighborhood_group",
         },
         follow_redirects=True,
     )
@@ -46,6 +48,7 @@ def test_filter_by_category(client):
         data={
             "title": "Break-in at nearby store",
             "description": "There was a break-in and theft at the corner store last night. Windows were smashed.",
+            "audience_type": "neighborhood_group",
         },
         follow_redirects=True,
     )
@@ -65,6 +68,7 @@ def test_search_incidents(client):
         data={
             "title": "Router compromised",
             "description": "Unknown devices appeared on my home wifi network. Someone may have hacked the router.",
+            "audience_type": "remote_worker",
         },
         follow_redirects=True,
     )
@@ -76,3 +80,21 @@ def test_search_incidents(client):
     response = client.get("/?q=nonexistent_term_xyz")
     assert response.status_code == 200
     assert "Router compromised" not in response.text
+
+
+def test_audience_specific_checklist(client):
+    """Elderly user audience produces simpler, tailored checklist items."""
+    response = client.post(
+        "/incidents",
+        data={
+            "title": "Suspicious phone call about gift cards",
+            "description": "Someone called claiming I owe money to the IRS and must pay with gift cards immediately or face arrest.",
+            "audience_type": "elderly_user",
+        },
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    # Elderly checklists should mention asking for help from trusted people
+    assert "trusted" in response.text.lower() or "family" in response.text.lower()
+    # Should show the Elderly User audience badge
+    assert "Elderly User" in response.text

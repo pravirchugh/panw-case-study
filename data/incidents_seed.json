@@ -4,7 +4,9 @@
     "description": "Received a text message saying my Chase account has been locked and I need to click a link to verify my identity. The link goes to a domain that is not chase.com. The message came from an unknown number and used urgent language.",
     "category": "phishing",
     "severity": "medium",
-    "status": "open",      "audience_type": "neighborhood_group",    "summary": "This report describes a possible phishing attempt designed to steal credentials or personal information. Exercise caution and avoid interacting with the suspicious message.",
+    "status": "open",
+    "audience_type": "neighborhood_group",
+    "summary": "This report describes a possible phishing attempt designed to steal credentials or personal information. Exercise caution and avoid interacting with the suspicious message.",
     "checklist": ["Do not click any links or download attachments from the suspicious message.", "If you already clicked, change your password immediately for the affected account.", "Enable multi-factor authentication (MFA) on your accounts.", "Report the phishing attempt to the impersonated organization via their official website."]
   },
   {
@@ -12,8 +14,10 @@
     "description": "Someone called claiming to be from the IRS saying I owe back taxes and must pay immediately with iTunes gift cards or face arrest. They were very aggressive and said police were on the way. This is clearly a scam but I wanted to report it for others.",
     "category": "scam_fraud",
     "severity": "medium",
-    "status": "reviewed",      "audience_type": "elderly_user",    "summary": "This report describes a potential scam or fraud attempt seeking money or sensitive information. Do not engage with the requester.",
-    "checklist": ["Stop all communication with the suspected scammer immediately.", "Do not send money, gift cards, or personal information.", "Report the scam to the FTC at reportfraud.ftc.gov.", "Alert your bank or financial institution if you shared payment details."]
+    "status": "reviewed",
+    "audience_type": "elderly_user",
+    "summary": "Someone pretending to be from the IRS called and tried to scare you into paying with gift cards. This is a well-known scam. The real IRS will never call and demand gift cards.",
+    "checklist": ["Hang up the phone. Do not call the number back.", "Do not buy or send any gift cards.", "Tell a family member or someone you trust about the call.", "Call the real IRS at 1-800-829-1040 if you are worried about your taxes."]
   },
   {
     "title": "Neighbor's Wi-Fi network compromised",
@@ -22,15 +26,17 @@
     "severity": "high",
     "status": "open",
     "audience_type": "remote_worker",
-    "summary": "This report describes a potential network or cybersecurity threat. Investigate affected systems and secure network access promptly.",
-    "checklist": ["Disconnect the affected device from the network if you suspect active compromise.", "Change your Wi-Fi password and any reused passwords immediately.", "Run a full antivirus/malware scan on all connected devices.", "Check your router firmware for updates and disable remote management."]
+    "summary": "Unauthorized access to a home router has been reported, with unknown devices on the network and admin credentials changed. This represents a serious network compromise that could expose all connected devices.",
+    "checklist": ["Factory-reset the router using the physical reset button, then reconfigure with a strong WPA3 password.", "Update the router firmware to the latest version from the manufacturer's website.", "Change the default admin credentials and disable WPS and remote management.", "Run a full malware scan on all devices that were connected to the compromised network."]
   },
   {
     "title": "Unauthorized credit card opened in my name",
     "description": "I received a letter congratulating me on a new credit card that I never applied for. Someone appears to have used my social security number to open this account. I have placed a freeze on my credit report but wanted to alert the community.",
     "category": "identity_theft",
     "severity": "high",
-    "status": "open",      "audience_type": "neighborhood_group",    "summary": "This report indicates possible identity theft or unauthorized use of personal information. Take immediate steps to secure your accounts and credit.",
+    "status": "open",
+    "audience_type": "neighborhood_group",
+    "summary": "This report indicates possible identity theft or unauthorized use of personal information. Take immediate steps to secure your accounts and credit.",
     "checklist": ["Place a fraud alert or credit freeze with all three credit bureaus (Equifax, Experian, TransUnion).", "Review your credit report for any unauthorized accounts or inquiries.", "File an identity theft report at identitytheft.gov.", "Monitor your bank and credit card statements closely for unfamiliar charges."]
   },
   {
@@ -38,7 +44,9 @@
     "description": "Multiple cars on Maple Street had their windows broken overnight. Items were stolen from at least three vehicles. A suspicious person was seen walking through the neighborhood around 2 AM. Residents are advised to lock their cars and remove valuables.",
     "category": "physical_safety",
     "severity": "medium",
-    "status": "reviewed",      "audience_type": "neighborhood_group",    "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
+    "status": "reviewed",
+    "audience_type": "neighborhood_group",
+    "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
     "checklist": ["If you are in immediate danger, call 911 or your local emergency number.", "Document the incident with photos, timestamps, and descriptions.", "File a report with your local police department.", "Alert neighbors or community members to increase awareness."]
   },
   {
@@ -48,8 +56,8 @@
     "severity": "medium",
     "status": "open",
     "audience_type": "elderly_user",
-    "summary": "This report describes a potential scam or fraud attempt seeking money or sensitive information. Do not engage with the requester.",
-    "checklist": ["Stop all communication with the suspected scammer immediately.", "Do not send money, gift cards, or personal information.", "Report the scam to the FTC at reportfraud.ftc.gov.", "Alert your bank or financial institution if you shared payment details."]
+    "summary": "Fake text messages are going around pretending to be from a delivery company. They ask you to pay a small fee, but the website is not real and will steal your credit card information.",
+    "checklist": ["Do not click any links in the text message.", "Delete the text message right away.", "If you entered your credit card information, call your bank immediately.", "Ask a trusted family member or friend to help you check if you have any real deliveries expected."]
   },
   {
     "title": "Ransomware warning from local business network",
@@ -58,15 +66,17 @@
     "severity": "high",
     "status": "open",
     "audience_type": "remote_worker",
-    "summary": "This report describes a potential network or cybersecurity threat. Investigate affected systems and secure network access promptly.",
-    "checklist": ["Disconnect the affected device from the network if you suspect active compromise.", "Change your Wi-Fi password and any reused passwords immediately.", "Run a full antivirus/malware scan on all connected devices.", "Check your router firmware for updates and disable remote management."]
+    "summary": "A ransomware attack has been reported on a local business network. Systems are encrypted and attackers are demanding cryptocurrency payment. This highlights the importance of network segmentation and offline backups.",
+    "checklist": ["Verify your own backup strategy: ensure you have offline or air-gapped backups of critical data.", "Check that your endpoint protection and OS patches are up to date on all work devices.", "Enable network-level DNS filtering to block known malicious domains.", "Review your firewall rules and disable unnecessary inbound ports, especially RDP (3389)."]
   },
   {
     "title": "Vandalism at community park",
     "description": "The playground equipment at Riverside Community Park was vandalized overnight. Graffiti was sprayed on the slides and two benches were damaged. This is the second incident of property damage this month.",
     "category": "physical_safety",
     "severity": "low",
-    "status": "resolved",      "audience_type": "neighborhood_group",    "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
+    "status": "resolved",
+    "audience_type": "neighborhood_group",
+    "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
     "checklist": ["If you are in immediate danger, call 911 or your local emergency number.", "Document the incident with photos, timestamps, and descriptions.", "File a report with your local police department.", "Alert neighbors or community members to increase awareness."]
   },
   {
@@ -75,9 +85,9 @@
     "category": "phishing",
     "severity": "high",
     "status": "open",
-    "audience_type": "remote_worker",    
-    "summary": "This report describes a possible phishing attempt designed to steal credentials or personal information. Exercise caution and avoid interacting with the suspicious message.",
-    "checklist": ["Do not click any links or download attachments from the suspicious message.", "If you already clicked, change your password immediately for the affected account.", "Enable multi-factor authentication (MFA) on your accounts.", "Report the phishing attempt to the impersonated organization via their official website."]
+    "audience_type": "remote_worker",
+    "summary": "A credential-harvesting phishing email is targeting co-working space members, impersonating building management with a fake login portal. This could compromise corporate VPN and SSO credentials if reused passwords are entered.",
+    "checklist": ["Do not click the link. Report the email as phishing in your mail client and notify your IT/security team.", "If you entered credentials, immediately rotate your password and any accounts sharing that password.", "Enable hardware-key or app-based MFA on all work accounts (avoid SMS-based 2FA).", "Check your email account's recent login activity and authorized app connections for suspicious entries."]
   },
   {
     "title": "Elderly neighbor targeted by tech support scam",
@@ -86,7 +96,7 @@
     "severity": "high",
     "status": "reviewed",
     "audience_type": "elderly_user",
-    "summary": "This report describes a potential scam or fraud attempt seeking money or sensitive information. Do not engage with the requester.",
-    "checklist": ["Stop all communication with the suspected scammer immediately.", "Do not send money, gift cards, or personal information.", "Report the scam to the FTC at reportfraud.ftc.gov.", "Alert your bank or financial institution if you shared payment details."]
+    "summary": "A fake virus warning appeared on the computer and tricked someone into calling a scammer. The scammer asked for remote access and money. Microsoft will never show pop-ups asking you to call a phone number.",
+    "checklist": ["Turn off the computer right away to stop the scammer from accessing it.", "Do not send any money or give out bank information.", "Ask a family member or trusted friend to help check the computer for problems.", "Call your bank if you already sent money or shared your account details."]
   }
 ]
