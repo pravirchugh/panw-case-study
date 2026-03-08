@@ -4,8 +4,7 @@
     "description": "Received a text message saying my Chase account has been locked and I need to click a link to verify my identity. The link goes to a domain that is not chase.com. The message came from an unknown number and used urgent language.",
     "category": "phishing",
     "severity": "medium",
-    "status": "open",
-    "summary": "This report describes a possible phishing attempt designed to steal credentials or personal information. Exercise caution and avoid interacting with the suspicious message.",
+    "status": "open",      "audience_type": "neighborhood_group",    "summary": "This report describes a possible phishing attempt designed to steal credentials or personal information. Exercise caution and avoid interacting with the suspicious message.",
     "checklist": ["Do not click any links or download attachments from the suspicious message.", "If you already clicked, change your password immediately for the affected account.", "Enable multi-factor authentication (MFA) on your accounts.", "Report the phishing attempt to the impersonated organization via their official website."]
   },
   {
@@ -13,8 +12,7 @@
     "description": "Someone called claiming to be from the IRS saying I owe back taxes and must pay immediately with iTunes gift cards or face arrest. They were very aggressive and said police were on the way. This is clearly a scam but I wanted to report it for others.",
     "category": "scam_fraud",
     "severity": "medium",
-    "status": "reviewed",
-    "summary": "This report describes a potential scam or fraud attempt seeking money or sensitive information. Do not engage with the requester.",
+    "status": "reviewed",      "audience_type": "elderly_user",    "summary": "This report describes a potential scam or fraud attempt seeking money or sensitive information. Do not engage with the requester.",
     "checklist": ["Stop all communication with the suspected scammer immediately.", "Do not send money, gift cards, or personal information.", "Report the scam to the FTC at reportfraud.ftc.gov.", "Alert your bank or financial institution if you shared payment details."]
   },
   {
@@ -23,6 +21,7 @@
     "category": "network_security",
     "severity": "high",
     "status": "open",
+    "audience_type": "remote_worker",
     "summary": "This report describes a potential network or cybersecurity threat. Investigate affected systems and secure network access promptly.",
     "checklist": ["Disconnect the affected device from the network if you suspect active compromise.", "Change your Wi-Fi password and any reused passwords immediately.", "Run a full antivirus/malware scan on all connected devices.", "Check your router firmware for updates and disable remote management."]
   },
@@ -31,8 +30,7 @@
     "description": "I received a letter congratulating me on a new credit card that I never applied for. Someone appears to have used my social security number to open this account. I have placed a freeze on my credit report but wanted to alert the community.",
     "category": "identity_theft",
     "severity": "high",
-    "status": "open",
-    "summary": "This report indicates possible identity theft or unauthorized use of personal information. Take immediate steps to secure your accounts and credit.",
+    "status": "open",      "audience_type": "neighborhood_group",    "summary": "This report indicates possible identity theft or unauthorized use of personal information. Take immediate steps to secure your accounts and credit.",
     "checklist": ["Place a fraud alert or credit freeze with all three credit bureaus (Equifax, Experian, TransUnion).", "Review your credit report for any unauthorized accounts or inquiries.", "File an identity theft report at identitytheft.gov.", "Monitor your bank and credit card statements closely for unfamiliar charges."]
   },
   {
@@ -40,8 +38,7 @@
     "description": "Multiple cars on Maple Street had their windows broken overnight. Items were stolen from at least three vehicles. A suspicious person was seen walking through the neighborhood around 2 AM. Residents are advised to lock their cars and remove valuables.",
     "category": "physical_safety",
     "severity": "medium",
-    "status": "reviewed",
-    "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
+    "status": "reviewed",      "audience_type": "neighborhood_group",    "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
     "checklist": ["If you are in immediate danger, call 911 or your local emergency number.", "Document the incident with photos, timestamps, and descriptions.", "File a report with your local police department.", "Alert neighbors or community members to increase awareness."]
   },
   {
@@ -50,6 +47,7 @@
     "category": "scam_fraud",
     "severity": "medium",
     "status": "open",
+    "audience_type": "elderly_user",
     "summary": "This report describes a potential scam or fraud attempt seeking money or sensitive information. Do not engage with the requester.",
     "checklist": ["Stop all communication with the suspected scammer immediately.", "Do not send money, gift cards, or personal information.", "Report the scam to the FTC at reportfraud.ftc.gov.", "Alert your bank or financial institution if you shared payment details."]
   },
@@ -59,6 +57,7 @@
     "category": "network_security",
     "severity": "high",
     "status": "open",
+    "audience_type": "remote_worker",
     "summary": "This report describes a potential network or cybersecurity threat. Investigate affected systems and secure network access promptly.",
     "checklist": ["Disconnect the affected device from the network if you suspect active compromise.", "Change your Wi-Fi password and any reused passwords immediately.", "Run a full antivirus/malware scan on all connected devices.", "Check your router firmware for updates and disable remote management."]
   },
@@ -67,8 +66,7 @@
     "description": "The playground equipment at Riverside Community Park was vandalized overnight. Graffiti was sprayed on the slides and two benches were damaged. This is the second incident of property damage this month.",
     "category": "physical_safety",
     "severity": "low",
-    "status": "resolved",
-    "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
+    "status": "resolved",      "audience_type": "neighborhood_group",    "summary": "This report describes a physical safety concern in the community. Prioritize personal safety and contact local authorities if needed.",
     "checklist": ["If you are in immediate danger, call 911 or your local emergency number.", "Document the incident with photos, timestamps, and descriptions.", "File a report with your local police department.", "Alert neighbors or community members to increase awareness."]
   },
   {
@@ -77,6 +75,7 @@
     "category": "phishing",
     "severity": "high",
     "status": "open",
+    "audience_type": "remote_worker",    
     "summary": "This report describes a possible phishing attempt designed to steal credentials or personal information. Exercise caution and avoid interacting with the suspicious message.",
     "checklist": ["Do not click any links or download attachments from the suspicious message.", "If you already clicked, change your password immediately for the affected account.", "Enable multi-factor authentication (MFA) on your accounts.", "Report the phishing attempt to the impersonated organization via their official website."]
   },
@@ -86,6 +85,7 @@
     "category": "scam_fraud",
     "severity": "high",
     "status": "reviewed",
+    "audience_type": "elderly_user",
     "summary": "This report describes a potential scam or fraud attempt seeking money or sensitive information. Do not engage with the requester.",
     "checklist": ["Stop all communication with the suspected scammer immediately.", "Do not send money, gift cards, or personal information.", "Report the scam to the FTC at reportfraud.ftc.gov.", "Alert your bank or financial institution if you shared payment details."]
   }
