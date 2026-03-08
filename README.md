@@ -10,6 +10,8 @@ An AI-powered community safety and digital wellness platform that helps users re
 
 **Estimated Time Spent:** ~5.5 hours
 
+**Video Link:**: https://youtu.be/ca0tN935l9I
+
 ---
 
 ## Quick Start
